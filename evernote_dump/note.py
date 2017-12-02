@@ -32,12 +32,7 @@ class Note(object):
         self.__uuid = uuid.uuid4()
 
     def add_attachment(self, attachment):
-        # attachment.__MEDIA_PATH = urlSafeString(self.__title)
-        # self.__MEDIA_PATH = urlSafeString(self.__title)
-        # attachment.set_media_path(self.__MEDIA_PATH)
         self.__attachments.append(attachment)
-        # Now transform the note text appropriately
-        
 
     def add_found_attribute(self, attr, dataline):
         self.__attributes.append([attr, dataline])
@@ -55,7 +50,6 @@ class Note(object):
     def clean_html(self):
         # Cleans self.__html and prepares it for markdown conversion.
         self.convert_evernote_markings()
-
         # Insert a title to be parsed in markdown
         self.__html = ("<h1>" + self.__title + "</h1>" + self.__html).encode('utf-8') 
         
@@ -79,7 +73,6 @@ class Note(object):
         for i in range(len(matches)):
             _hash = re.findall(r'[a-zA-Z0-9]{32}', matches[i])
             if_image = "!" if "image" in matches[i] else ""
-            # placeholder = "\n%s[noteattachment%d][%s]" % (if_image, i+1, _hash[0])
             placeholder = "\n%s[noteattachment][%s]" % (if_image, _hash[0])
             self.__html = self.__html.replace(matches[i], placeholder)
 
@@ -105,16 +98,16 @@ class Note(object):
     def create_markdown(self):
         self.clean_html()
         self.__markdown += "---\n"
-        self.__markdown += "title: \"" + self.__title.replace("\"","\\\"") + "\"  \n"
-        self.create_markdown_note_attr()
+        self.create_markdown_note_attrs_main()
         if len(self.__tags) > 0:
             self.create_markdown_note_tags()
-        self.create_markdown_attachments()
+        self.create_markdown_note_attrs_attachments()
+        self.create_markdown_note_attrs_extra()
         self.__markdown += "---\n"
         self.convert_html_to_markdown()
         self.create_file()
             
-    def create_markdown_attachments(self):
+    def create_markdown_note_attrs_attachments(self):
         # Appends the attachment information in markdown format to self.__markdown
         if len(self.__attachments) > 0:
             #self.__markdown += "\n---"
@@ -124,16 +117,19 @@ class Note(object):
                 attachments_string +="%s, " % (self.__attachments[i].get_filename())
                 # self.__markdown += self.__attachments[i].get_attributes()
             self.__markdown += attachments_string[:-2] + "]  \n"
+            self.__markdown += "media_path: " + self.get_media_path() + "  \n"
                 
-    def create_markdown_note_attr(self):
+    def create_markdown_note_attrs_main(self):
         # self.__markdown += "\n### NOTE ATTRIBUTES"
+        self.__markdown += "title: \"" + self.__title.replace("\"","\\\"") + "\"  \n"
         self.__markdown += "created: " + self.__created_date.strftime(self.__TIME_FORMAT) + "  \n"
         self.__markdown += "modified: " + self.__updated_date.strftime(self.__TIME_FORMAT) + "  \n"
-        self.__markdown += "mediapath: " + self.get_media_path() + "  \n"
+
+    def create_markdown_note_attrs_extra(self):
         if len(self.__attributes) > 0:
             for attr in self.__attributes:
                 self.__markdown += "%s: %s  \n" % (attr[0], attr[1])
-    
+
     def create_markdown_note_tags(self):
         self.__markdown += "tags=["
         # self.__markdown += "\n### TAGS\n"

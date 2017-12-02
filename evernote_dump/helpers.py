@@ -123,4 +123,4 @@ def multiChoice(inTuple):
             return result
 
 def urlSafeString(text):
-    return re.sub(r"[^A-z0-9-]","_",unidecode(text))[:32]
+    return re.sub(r"[^A-z0-9-]","_",unidecode(text))[:32].lower()
