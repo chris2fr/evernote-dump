@@ -141,3 +141,31 @@ def urlSafeString(text):
     while len(retval) > 10 and retval[-1] == '_' or retval[-1] == '-':
         retval = retval[:-1]
     return retval
+
+def list_to_yaml(name, list):
+    return list_to_text(name, list, name + ": [", "", ", ", "]  \n")
+    retval = ""
+    if len(list) is 0:
+        return ""
+    retval += name + ": ["
+    for item in list:
+        retval += re.sub(r'^[^-]*-','',urlSafeString(item))
+        #retval += urlSafeString(list[i])
+        retval += ", "
+    return retval[:-2] + "]  \n"
+
+def list_to_text_tags(name, list):
+    return list_to_text(name, list, "", "#", " ", "  \n")
+
+def list_to_text(name, list, begin, prefix, suffix, end):
+    retval = ""
+    if len(list) is 0:
+        return ""
+    retval += begin
+    for item in list:
+        retval += prefix
+        retval += re.sub(r'^[^-]*-','',urlSafeString(item))
+        #retval += urlSafeString(list[i])
+        retval += suffix
+    return retval[:-len(suffix)] + end
+

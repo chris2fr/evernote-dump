@@ -22,6 +22,7 @@ class Note(object):
         self.__created_date = datetime.now()
         self.__updated_date = self.__created_date
         self.__tags = []
+        self.__catagories = []
         self.__attributes = []
         self.__path = ""
         # Resources/Attachments
@@ -106,6 +107,7 @@ class Note(object):
         self.clean_html()
         self.__markdown += "---\n"
         self.create_markdown_note_attrs_main()
+        self.create_markdown_note_categories_yaml()
         self.create_markdown_note_tags_yaml()
         self.create_markdown_note_attrs_attachments()
         self.create_markdown_note_attrs_extra()
@@ -138,22 +140,13 @@ class Note(object):
                 self.__markdown += "%s: %s  \n" % (attr[0], attr[1])
 
     def create_markdown_note_tags_yaml(self):
-        if len(self.__tags) > 0:
-            self.__markdown += "tags: ["
-            # self.__markdown += "\n### TAGS\n"
-            tags = ""
-            for tag in self.__tags:
-                tags += urlSafeString(tag) + ", "
-            self.__markdown += tags[:-2] + "]  \n"
+        self.__markdown +=  list_to_yaml("tags",self.__tags)
+
+    def create_markdown_note_categories_yaml(self):
+        self.__markdown +=  list_to_yaml("categories",self.__catagories)
 
     def create_markdown_note_tags_text(self):
-        if len(self.__tags) > 0:
-            self.__markdown += ""
-                # self.__markdown += "\n### TAGS\n"
-            tags = ""
-            for tag in self.__tags:
-                tags += "#" + urlSafeString(tag) + " "
-            self.__markdown += tags[:-1] + "  \n"
+        self.__markdown +=  list_to_text_tags("tags",self.__tags)
                 
     def finalize(self):
         self.create_markdown()
@@ -191,6 +184,7 @@ class Note(object):
     
     def set_prefix_filename(self,prefix_filename):
         self.__prefix_filename = prefix_filename
+        self.__catagories.append(prefix_filename)
 
     def set_prefix_date(self, prefix_date):
         self.__prefix_date = prefix_date
