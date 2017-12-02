@@ -8,7 +8,7 @@
 import sys
 import xml.sax # Steaming XML data for use with larger files
 from note import Note, Attachment
-from helpers import isYesNo, chooseLanguage, lang, isPythonThree
+from helpers import isYesNo, chooseLanguage, lang, isPythonThree, urlSafeString
 
 ############################
 ## Note Handler Functions ##
@@ -19,7 +19,11 @@ class NoteHandler( xml.sax.ContentHandler ):
         self.CurrentData = ""
         self.in_note_attributes = False
         self.in_resource_attributes = False
-
+        self.__prefix_filename = ""
+    
+    def set_prefix_filename(self, prefix_filename = ""):
+        self.__prefix_filename = prefix_filename
+    
     ########################
     ## ELEMENT READ START ##
     ########################
@@ -33,6 +37,7 @@ class NoteHandler( xml.sax.ContentHandler ):
         elif tag == "note": # New note found
             self.note = Note()
             self.note.set_path(current_file)
+            self.note.set_prefix_filename(self.__prefix_filename)
         elif tag == "data": # Found an attachment
             self.attachment = Attachment()
             self.attachment.set_path(current_file)
@@ -101,8 +106,9 @@ if ( __name__ == "__main__"):
         sys.exit()
 
     #INIT Request user input
-    chooseLanguage()
-    keep_file_names = isYesNo('_keep_file_names_q')
+    chooseLanguage(1)
+    keep_file_names = isYesNo('_keep_file_names_q','y')
+    prefix_enex_filename = isYesNo('_prefix_enex_filename_q','y')
 
     # create an XMLReader
     parser = xml.sax.make_parser()
@@ -117,8 +123,11 @@ if ( __name__ == "__main__"):
     for i in range(1,len(sys.argv)):
         # pass in first argument as input file.
         if ".enex" in sys.argv[i]:
+            if prefix_enex_filename:
+                Handler.set_prefix_filename(urlSafeString(sys.argv[i].split('/')[-1].replace(".enex",'')) + "-")
+            # print(prefix_enex_filename)
             current_file = sys.argv[i].replace(".enex", "/")
-            try:
-                parser.parse(sys.argv[i])
-            except:
-                print(sys.argv[i] + " was unable to be parsed correctly.")
+            #try:
+            parser.parse(sys.argv[i])
+            #except:
+                #print(sys.argv[i] + " was unable to be parsed correctly.")

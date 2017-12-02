@@ -9,7 +9,20 @@ translation = {
         '_note_processing':'Processing Note',
         '_exporting_note':'Exporting Note',
         '_exporting_attachment':'Exporting Attachment',
-        '_export_finished':'EXPORT FINISHED'
+        '_export_finished':'EXPORT FINISHED',
+        '_prefix_enex_filename_q':'Would you like to prefix file names with the ENEX filename?',
+        '_default':'Default'
+        },
+        'French':{
+        '_y_or_n_please':'Oui (Y) ou non (N) svp',
+        '_keep_file_names_q':'Maintenir noms de fichiers d\'origine ?',
+        '_export_started':'EXPORTATION DEMARREE',
+        '_note_processing':'En cours de traitement de note',
+        '_exporting_note':'En cours d\'exportation de note',
+        '_exporting_attachment':'En cours d\'exportation de fichier joint',
+        '_export_finished':'L\'EXPORTATION EST FAITE',
+        '_prefix_enex_filename_q':'Préfixer les noms de fichiers avec le nom du fichier ENEX ?',
+        '_default':'Défaut'
         },
         '日本語':{
         '_y_or_n_please':'「y」または「n」を入力してください。',
@@ -18,6 +31,8 @@ translation = {
         '_note_processing':'ノート処理中',
         '_exporting_note':'ノートをエクスポートしています',
         '_exporting_attachment':'添付をエクスポートしています',
-        '_export_finished':'エクスポート完了'
+        '_export_finished':'エクスポート完了',
+        '_default':'默认',
+        '_prefix_enex_filename_q':'你想用ENEX文件名前缀文件名吗？'
         }
 }

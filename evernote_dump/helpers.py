@@ -37,7 +37,7 @@ def isPythonThree():
     else:
         return True
 
-def isYesNo(phrase):
+def isYesNo(phrase,default = None):
     '''
     # Ask as yes/no question and have the input check and turned into
     # a boolean. Compatible with all versions of Python.
@@ -46,17 +46,23 @@ def isYesNo(phrase):
 
     returns: True for yes, False for no
     '''
+    prompt = "%s [y/n]" % (lang(phrase))
+    if default:
+        prompt += " (%s)" % (default)
     while True:
         if isPythonThree():
-            result = str(input(lang(phrase) + '[y/n] '))
+            result = str(input(prompt))
         else:
-            result = str(raw_input(lang(phrase) + '[y/n] '))
+            result = str(raw_input(prompt))
+
+        if not result and default:
+            result = default
 
         if result.lower() == 'yes' or result.lower() == 'y':
             return True
         elif result.lower() == 'no' or result.lower() == 'n':
             return False
-        print(lang('_y_or_n_please'))
+
 
 def lang(phrase):
         if phrase in translation[selang]:
@@ -64,13 +70,16 @@ def lang(phrase):
         else:
             return phrase + " (NEEDS TRANSLATION)"
 
-def chooseLanguage():
+def chooseLanguage(default = None):
     global selang
     phrase = ''
     counter = 1
     languages = []
     for language in sorted(translation.keys()):
-        phrase += '[' + str(counter) + ']' + language + ' '
+        phrase += '[' + str(counter) + ']' + language
+        if counter == default:
+            phrase += "*"
+        phrase += ' '
         languages.append(language)
         counter += 1
 
@@ -88,6 +97,9 @@ def chooseLanguage():
             
         if result <= len(languages) and result > 0:
             selang = languages[result -1] 
+            break
+        elif default and default > 0 and default <= len(languages):
+            selang = languages[default -1]
             break
         
 def makeDirCheck(path):
@@ -123,4 +135,7 @@ def multiChoice(inTuple):
             return result
 
 def urlSafeString(text):
-    return re.sub(r"[^A-z0-9-]","_",unidecode(text))[:32].lower()
+    retval = re.sub(r"[^A-z0-9-]","_",unidecode(text))[:32].lower()
+    while retval[-1] == '_' or retval[-1] == '-':
+        retval = retval[:-1]
+    return retval

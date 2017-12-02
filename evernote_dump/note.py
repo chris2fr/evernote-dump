@@ -30,6 +30,7 @@ class Note(object):
         self.__filename = ""
         self.__markdown = ""
         self.__uuid = uuid.uuid4()
+        self.__prefix_filename = ""
 
     def add_attachment(self, attachment):
         self.__attachments.append(attachment)
@@ -93,7 +94,7 @@ class Note(object):
         os.utime(self.__path, (self.__created_date.timestamp(), self.__updated_date.timestamp()))
 
     def create_filename(self):
-        self.__filename = checkForDouble(makeDirCheck(self.__path),  urlSafeString(self.__title) + ".md")
+        self.__filename = checkForDouble(makeDirCheck(self.__path),  self.__prefix_filename + urlSafeString(self.__title) + ".md")
     
     def create_markdown(self):
         self.clean_html()
@@ -154,7 +155,7 @@ class Note(object):
         return self.__uuid
     
     def get_media_path(self):
-        return urlSafeString(self.__title)
+        return self.__filename.replace(".md","")
 
     def new_attachment(self, filename):
         self.__attachments.append(Attachment(filename))
@@ -171,6 +172,9 @@ class Note(object):
     def set_title(self, title):
         self.__title = title
         self.create_filename()
+    
+    def set_prefix_filename(self,prefix_filename):
+        self.__prefix_filename = prefix_filename
         
 ######################
 ## ATTACHMENT CLASS ##
@@ -286,7 +290,7 @@ class Attachment(object):
         self.__filename = filename
     
     def set_media_path(self, media_path):
-        self.__MEDIA_PATH = urlSafeString(media_path) + "/"
+        self.__MEDIA_PATH = media_path + "/"
 
     def set_mime(self, mime):
         self.__mime = mime
@@ -296,6 +300,3 @@ class Attachment(object):
         
     def set_uuid(self, uuid):
         self.__uuid = uuid
-
-    #def set_media_path(self, media_path):
-    #        self.__MEDIA_PATH = media_path
