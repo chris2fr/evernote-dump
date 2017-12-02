@@ -3,6 +3,9 @@
 
 import os
 import sys
+import re # Added by Chris2fr
+#import unicodedata # Added by chris2fr
+from unidecode import unidecode
 from language import translation
 
 def checkForDouble(path, filename):
@@ -120,6 +123,4 @@ def multiChoice(inTuple):
             return result
 
 def urlSafeString(text):
-    for c in r'[]/\;,><&*:%=+@!#^()|?^':
-        text = text.replace(c,'')
-    return text
+    return re.sub(r"[^A-z0-9-]","_",unidecode(text))[:32]

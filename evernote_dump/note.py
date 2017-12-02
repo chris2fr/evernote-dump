@@ -32,7 +32,12 @@ class Note(object):
         self.__uuid = uuid.uuid4()
 
     def add_attachment(self, attachment):
+        # attachment.__MEDIA_PATH = urlSafeString(self.__title)
+        # self.__MEDIA_PATH = urlSafeString(self.__title)
+        # attachment.set_media_path(self.__MEDIA_PATH)
         self.__attachments.append(attachment)
+        # Now transform the note text appropriately
+        
 
     def add_found_attribute(self, attr, dataline):
         self.__attributes.append([attr, dataline])
@@ -73,55 +78,69 @@ class Note(object):
         # Replace all attachments links with a hash placeholder
         for i in range(len(matches)):
             _hash = re.findall(r'[a-zA-Z0-9]{32}', matches[i])
-            if_image = "!" if "image" in matches[i] else "!"
-            placeholder = "\n%s[noteattachment%d][%s]" % (if_image, i+1, _hash[0])
+            if_image = "!" if "image" in matches[i] else ""
+            # placeholder = "\n%s[noteattachment%d][%s]" % (if_image, i+1, _hash[0])
+            placeholder = "\n%s[noteattachment][%s]" % (if_image, _hash[0])
             self.__html = self.__html.replace(matches[i], placeholder)
 
     def convert_html_to_markdown(self):
-        self.__markdown = self.html2text.handle(self.__html.decode('utf-8'))
-        
+        # self.__markdown += self.html2text.handle(self.__html.decode('utf-8'))
+        retval = u""
+        search = u""
+        retval += self.html2text.handle(self.__html.decode('utf-8'))
+        for i in range(len(self.__attachments)):
+            search = "[noteattachment][" + self.__attachments[i].get_hash() + "]"
+            replace = "[%s](%s)" % (self.__attachments[i].get_filename(), self.get_media_path() + "/" + self.__attachments[i].get_filename())
+            retval = retval.replace(search,replace)
+        self.__markdown += retval
+            
     def create_file(self):
         with open(self.__path + self.__filename,'w') as outfile:
             outfile.write(self.__markdown)
         os.utime(self.__path, (self.__created_date.timestamp(), self.__updated_date.timestamp()))
 
     def create_filename(self):
-        self.__filename = checkForDouble(makeDirCheck(self.__path),  urlSafeString(self.__title[:30]) + ".md")    
+        self.__filename = checkForDouble(makeDirCheck(self.__path),  urlSafeString(self.__title) + ".md")
     
     def create_markdown(self):
         self.clean_html()
-        self.convert_html_to_markdown()
-        self.create_markdown_attachments()
+        self.__markdown += "---\n"
+        self.__markdown += "title: \"" + self.__title.replace("\"","\\\"") + "\"  \n"
         self.create_markdown_note_attr()
         if len(self.__tags) > 0:
             self.create_markdown_note_tags()
+        self.create_markdown_attachments()
+        self.__markdown += "---\n"
+        self.convert_html_to_markdown()
         self.create_file()
             
     def create_markdown_attachments(self):
         # Appends the attachment information in markdown format to self.__markdown
         if len(self.__attachments) > 0:
-            self.__markdown += "\n---"
-            self.__markdown += "\n### ATTACHMENTS"
+            #self.__markdown += "\n---"
+            self.__markdown += "attachments: ["
+            attachments_string = ""
             for i in range(len(self.__attachments)):
-                self.__markdown += "\n[%s]: %s%s" % (self.__attachments[i].get_hash(), self.__MEDIA_PATH, self.__attachments[i].get_filename())
-                self.__markdown += self.__attachments[i].get_attributes()
+                attachments_string +="%s, " % (self.__attachments[i].get_filename())
+                # self.__markdown += self.__attachments[i].get_attributes()
+            self.__markdown += attachments_string[:-2] + "]  \n"
                 
     def create_markdown_note_attr(self):
-        self.__markdown += "\n---"
-        self.__markdown += "\n### NOTE ATTRIBUTES"
-        self.__markdown += "\n>Created Date: " + self.__created_date.strftime(self.__TIME_FORMAT) + "  "
-        self.__markdown += "\n>Last Evernote Update Date: " + self.__updated_date.strftime(self.__TIME_FORMAT) + "  "
+        # self.__markdown += "\n### NOTE ATTRIBUTES"
+        self.__markdown += "created: " + self.__created_date.strftime(self.__TIME_FORMAT) + "  \n"
+        self.__markdown += "modified: " + self.__updated_date.strftime(self.__TIME_FORMAT) + "  \n"
+        self.__markdown += "mediapath: " + self.get_media_path() + "  \n"
         if len(self.__attributes) > 0:
             for attr in self.__attributes:
-                self.__markdown += "\n>%s: %s  " % (attr[0], attr[1])
-        
+                self.__markdown += "%s: %s  \n" % (attr[0], attr[1])
+    
     def create_markdown_note_tags(self):
-        self.__markdown += "\n\n---"
-        self.__markdown += "\n### TAGS\n"
+        self.__markdown += "tags=["
+        # self.__markdown += "\n### TAGS\n"
         tags = ""
         for tag in self.__tags:
-            tags += tag + ","
-        self.__markdown += tags[:-1]
+            tags += tag + ", "
+        self.__markdown += tags[:-2] + "]  \n"
 
     def finalize(self):
         self.create_markdown()
@@ -137,6 +156,9 @@ class Note(object):
     
     def get_uuid(self):
         return self.__uuid
+    
+    def get_media_path(self):
+        return urlSafeString(self.__title)
 
     def new_attachment(self, filename):
         self.__attachments.append(Attachment(filename))
@@ -202,7 +224,7 @@ class Attachment(object):
 
         if keep_file_names and __base:
             # Limit filename length to 30 characters
-            self.__filename = urlSafeString(__base[:30]) + '.' + __extension
+            self.__filename = urlSafeString(__base) + '.' + __extension
         else:
             # Create a filename from created date if none found or unwanted
             self.__filename = self.__created_date.strftime(self.__TIME_FORMAT) + '.' + __extension
@@ -266,6 +288,9 @@ class Attachment(object):
 
     def set_filename(self, filename):
         self.__filename = filename
+    
+    def set_media_path(self, media_path):
+        self.__MEDIA_PATH = urlSafeString(media_path) + "/"
 
     def set_mime(self, mime):
         self.__mime = mime
@@ -275,3 +300,6 @@ class Attachment(object):
         
     def set_uuid(self, uuid):
         self.__uuid = uuid
+
+    #def set_media_path(self, media_path):
+    #        self.__MEDIA_PATH = media_path
