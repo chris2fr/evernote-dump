@@ -11,7 +11,8 @@ translation = {
         '_exporting_attachment':'Exporting Attachment',
         '_export_finished':'EXPORT FINISHED',
         '_prefix_enex_filename_q':'Would you like to prefix file names with the ENEX filename?',
-        '_default':'Default'
+        '_default':'Default',
+        '_prefix_date_in_filename_q':'Prefix note date in filename (yymmdd)?'
         },
         'French':{
         '_y_or_n_please':'Oui (Y) ou non (N) svp',
@@ -22,7 +23,8 @@ translation = {
         '_exporting_attachment':'En cours d\'exportation de fichier joint',
         '_export_finished':'L\'EXPORTATION EST FAITE',
         '_prefix_enex_filename_q':'Préfixer les noms de fichiers avec le nom du fichier ENEX ?',
-        '_default':'Défaut'
+        '_default':'Défaut',
+        '_prefix_date_in_filename_q':'Préfixer la date (aammjj) à chaque fichier ?'
         },
         '日本語':{
         '_y_or_n_please':'「y」または「n」を入力してください。',
@@ -33,6 +35,7 @@ translation = {
         '_exporting_attachment':'添付をエクスポートしています',
         '_export_finished':'エクスポート完了',
         '_default':'默认',
-        '_prefix_enex_filename_q':'你想用ENEX文件名前缀文件名吗？'
+        '_prefix_enex_filename_q':'你想用ENEX文件名前缀文件名吗？',
+        '_prefix_date_in_filename_q':'文件名前面的注释日期？'
         }
 }

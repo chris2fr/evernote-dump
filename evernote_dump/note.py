@@ -31,6 +31,7 @@ class Note(object):
         self.__markdown = ""
         self.__uuid = uuid.uuid4()
         self.__prefix_filename = ""
+        self.__prefix_date = False
 
     def add_attachment(self, attachment):
         self.__attachments.append(attachment)
@@ -94,7 +95,11 @@ class Note(object):
         os.utime(self.__path, (self.__created_date.timestamp(), self.__updated_date.timestamp()))
 
     def create_filename(self):
-        self.__filename = checkForDouble(makeDirCheck(self.__path),  self.__prefix_filename + urlSafeString(self.__title) + ".md")
+        filename =  self.__prefix_filename
+        if self.__prefix_date is not False:
+            filename += self.__created_date.strftime("%y%m%d") + "-"
+        filename += urlSafeString(self.__title) + ".md"
+        self.__filename = checkForDouble(makeDirCheck(self.__path), filename)
     
     def create_markdown(self):
         self.clean_html()
@@ -162,6 +167,7 @@ class Note(object):
         
     def set_created_date(self, date_string):
         self.__created_date = datetime.strptime(date_string, self.__ISO_DATE_FORMAT)
+        self.create_filename()
     
     def set_updated_date(self, date_string):
         self.__updated_date = datetime.strptime(date_string, self.__ISO_DATE_FORMAT)
@@ -171,10 +177,12 @@ class Note(object):
         
     def set_title(self, title):
         self.__title = title
-        self.create_filename()
     
     def set_prefix_filename(self,prefix_filename):
         self.__prefix_filename = prefix_filename
+
+    def set_prefix_date(self, prefix_date):
+        self.__prefix_date = prefix_date
         
 ######################
 ## ATTACHMENT CLASS ##

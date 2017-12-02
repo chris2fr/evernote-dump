@@ -20,9 +20,13 @@ class NoteHandler( xml.sax.ContentHandler ):
         self.in_note_attributes = False
         self.in_resource_attributes = False
         self.__prefix_filename = ""
+        self.__prefix_date = False
     
     def set_prefix_filename(self, prefix_filename = ""):
         self.__prefix_filename = prefix_filename
+    
+    def set_prefix_date(self, prefix_date = False):
+        self.__prefix_date = prefix_date
     
     ########################
     ## ELEMENT READ START ##
@@ -38,6 +42,7 @@ class NoteHandler( xml.sax.ContentHandler ):
             self.note = Note()
             self.note.set_path(current_file)
             self.note.set_prefix_filename(self.__prefix_filename)
+            self.note.set_prefix_date(self.__prefix_date)
         elif tag == "data": # Found an attachment
             self.attachment = Attachment()
             self.attachment.set_path(current_file)
@@ -109,6 +114,7 @@ if ( __name__ == "__main__"):
     chooseLanguage(1)
     keep_file_names = isYesNo('_keep_file_names_q','y')
     prefix_enex_filename = isYesNo('_prefix_enex_filename_q','y')
+    prefix_date_filename = isYesNo('_prefix_date_in_filename_q','y')
 
     # create an XMLReader
     parser = xml.sax.make_parser()
@@ -124,8 +130,9 @@ if ( __name__ == "__main__"):
         # pass in first argument as input file.
         if ".enex" in sys.argv[i]:
             if prefix_enex_filename:
-                Handler.set_prefix_filename(urlSafeString(sys.argv[i].split('/')[-1].replace(".enex",'')) + "-")
+                Handler.set_prefix_filename(urlSafeString(sys.argv[i].split('/')[-1].replace(".enex",''))[:10] + "-")
             # print(prefix_enex_filename)
+            Handler.set_prefix_date(prefix_date_filename)
             current_file = sys.argv[i].replace(".enex", "/")
             #try:
             parser.parse(sys.argv[i])

@@ -135,7 +135,7 @@ def multiChoice(inTuple):
             return result
 
 def urlSafeString(text):
-    retval = re.sub(r"[^A-z0-9-]","_",unidecode(text))[:32].lower()
+    retval = re.sub(r"[^A-z0-9-]","_",unidecode(text))[:26].lower()
     while retval[-1] == '_' or retval[-1] == '-':
         retval = retval[:-1]
     return retval
