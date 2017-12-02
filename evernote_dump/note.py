@@ -82,12 +82,13 @@ class Note(object):
         # self.__markdown += self.html2text.handle(self.__html.decode('utf-8'))
         retval = u""
         search = u""
+        self.html2text.body_width = 0
         retval += self.html2text.handle(self.__html.decode('utf-8'))
         for i in range(len(self.__attachments)):
             search = "[noteattachment][" + self.__attachments[i].get_hash() + "]"
             replace = "[%s](%s)" % (self.__attachments[i].get_filename(), self.get_media_path() + "/" + self.__attachments[i].get_filename())
             retval = retval.replace(search,replace)
-        self.__markdown += retval
+        self.__markdown += retval + "  \n"
             
     def create_file(self):
         with open(self.__path + self.__filename,'w') as outfile:
@@ -105,12 +106,12 @@ class Note(object):
         self.clean_html()
         self.__markdown += "---\n"
         self.create_markdown_note_attrs_main()
-        if len(self.__tags) > 0:
-            self.create_markdown_note_tags()
+        self.create_markdown_note_tags_yaml()
         self.create_markdown_note_attrs_attachments()
         self.create_markdown_note_attrs_extra()
         self.__markdown += "---\n"
         self.convert_html_to_markdown()
+        self.create_markdown_note_tags_text()
         self.create_file()
             
     def create_markdown_note_attrs_attachments(self):
@@ -136,14 +137,24 @@ class Note(object):
             for attr in self.__attributes:
                 self.__markdown += "%s: %s  \n" % (attr[0], attr[1])
 
-    def create_markdown_note_tags(self):
-        self.__markdown += "tags=["
-        # self.__markdown += "\n### TAGS\n"
-        tags = ""
-        for tag in self.__tags:
-            tags += tag + ", "
-        self.__markdown += tags[:-2] + "]  \n"
+    def create_markdown_note_tags_yaml(self):
+        if len(self.__tags) > 0:
+            self.__markdown += "tags: ["
+            # self.__markdown += "\n### TAGS\n"
+            tags = ""
+            for tag in self.__tags:
+                tags += urlSafeString(tag) + ", "
+            self.__markdown += tags[:-2] + "]  \n"
 
+    def create_markdown_note_tags_text(self):
+        if len(self.__tags) > 0:
+            self.__markdown += ""
+                # self.__markdown += "\n### TAGS\n"
+            tags = ""
+            for tag in self.__tags:
+                tags += "#" + urlSafeString(tag) + " "
+            self.__markdown += tags[:-1] + "  \n"
+                
     def finalize(self):
         self.create_markdown()
 
