@@ -4,7 +4,6 @@
 import os
 import sys
 import re # Added by Chris2fr
-#import unicodedata # Added by chris2fr
 from unidecode import unidecode
 from language import translation
 
@@ -70,37 +69,32 @@ def lang(phrase):
         else:
             return phrase + " (NEEDS TRANSLATION)"
 
-def chooseLanguage(default = None):
+def set_lang(lang = 'en'):
+    global selang
+    selang = lang
+
+def chooseLanguage(default = 'en'):
     global selang
     phrase = ''
     counter = 1
     languages = []
     for language in sorted(translation.keys()):
-        phrase += '[' + str(counter) + ']' + language
-        if counter == default:
+        phrase += '[' + language + '] ' + translation[language]['_language_name']
+        if language == default:
             phrase += "*"
         phrase += ' '
         languages.append(language)
         counter += 1
 
-    while True:
-        if sys.version_info[:2] <= (2, 7):
-            try:
-                result = int(raw_input(phrase))
-            except:
-                result = -1
-        else:
-            try:
-                result = int(input(phrase))
-            except:
-                result = -1
-            
-        if result <= len(languages) and result > 0:
-            selang = languages[result -1] 
-            break
-        elif default and default > 0 and default <= len(languages):
-            selang = languages[default -1]
-            break
+    if sys.version_info[:2] <= (2, 7):
+        result = raw_input(phrase)
+    else:
+        result = input(phrase)
+
+    if result in translation:
+        selang = result
+    else:
+        selang = default
         
 def makeDirCheck(path):
     '''

@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 translation = {
-        'English':{
+        'en':{
+        '_language_name':'English',
         '_y_or_n_please':'Please answer with "y" or "n" only.',
         '_keep_file_names_q':'Would you like to keep the original filenames if found?',
         '_export_started':'EXPORT STARTED',
@@ -14,7 +15,8 @@ translation = {
         '_default':'Default',
         '_prefix_date_in_filename_q':'Prefix note date in filename (yymmdd)?'
         },
-        'French':{
+        'fr':{
+        '_language_name':'Français',
         '_y_or_n_please':'Oui (Y) ou non (N) svp',
         '_keep_file_names_q':'Maintenir noms de fichiers d\'origine ?',
         '_export_started':'EXPORTATION DEMARREE',
@@ -26,7 +28,8 @@ translation = {
         '_default':'Défaut',
         '_prefix_date_in_filename_q':'Préfixer la date (aammjj) à chaque fichier ?'
         },
-        '日本語':{
+        'cn':{
+        '_language_name':'日本語',
         '_y_or_n_please':'「y」または「n」を入力してください。',
         '_keep_file_names_q':'もともとからあったファイル名を残しますか？',
         '_export_started':'エクスポート開始',

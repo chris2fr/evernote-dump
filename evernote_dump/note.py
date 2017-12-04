@@ -137,13 +137,16 @@ class Note(object):
     def create_markdown_note_attrs_extra(self):
         if len(self.__attributes) > 0:
             for attr in self.__attributes:
-                self.__markdown += "%s: %s  \n" % (attr[0], attr[1])
+                if attr[1] and attr[1] is not 0:
+                    self.__markdown += "%s: %s  \n" % (attr[0], attr[1])
 
     def create_markdown_note_tags_yaml(self):
         self.__markdown +=  list_to_yaml("tags",self.__tags)
 
     def create_markdown_note_categories_yaml(self):
-        self.__markdown +=  list_to_yaml("categories",self.__catagories)
+        #print(self.__categories)
+        if len(self.__catagories) > 0:
+            self.__markdown +=  list_to_yaml("categories",self.__catagories)
 
     def create_markdown_note_tags_text(self):
         self.__markdown +=  list_to_text_tags("tags",self.__tags)
@@ -183,6 +186,8 @@ class Note(object):
         self.__title = title
     
     def set_prefix_filename(self,prefix_filename):
+        if not prefix_filename:
+            return
         self.__prefix_filename = prefix_filename
         self.__catagories.append(prefix_filename)
 
